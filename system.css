@@ -8,3 +8,8 @@
 .login-card .message{width:100%;max-width:36rem;margin:12px auto 0;text-align:center;overflow-wrap:anywhere}
 @media(max-width:680px){.login-card h1{white-space:normal;font-size:clamp(1.65rem,6vw,1.9rem);line-height:1.4}.login-title-line{display:block}}
 @media(max-width:380px){.login-screen{padding:16px}.login-card{padding:28px 18px}.login-card h1{font-size:clamp(1.48rem,6.5vw,1.7rem)}.login-card .lead{font-size:.9rem}}
+
+/* 儀表板主標題：桌機保持精簡，手機以語意分行。 */
+.hero h1{font-size:clamp(1.85rem,3vw,2.65rem);line-height:1.3;letter-spacing:-.02em}
+.hero-title-line{white-space:nowrap}
+@media(max-width:480px){.hero-title-line{display:block}}
