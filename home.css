@@ -14,8 +14,9 @@
 .portal-side-top,.portal-side-course{padding:23px 19px}.portal-side-top h2{margin:7px 0;font-size:1.18rem;line-height:1.35}.portal-account{margin:0;overflow-wrap:anywhere;color:#6d8293;font-size:.77rem}
 .portal-kicker{margin:0;color:#2e668c;font-size:.7rem;font-weight:900;letter-spacing:.16em}
 .portal-side-nav{display:grid;gap:4px;padding:12px;border-top:1px solid #e8eff5;border-bottom:1px solid #e8eff5}
-.portal-side-nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;color:#526a7c;font-size:.83rem;font-weight:800;text-decoration:none}
-.portal-side-nav a span{min-width:23px;text-align:center;color:#8ba5b8;font-size:.75rem}
+.portal-side-nav a,.portal-side-nav .portal-side-placeholder{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;color:#526a7c;font-size:.83rem;font-weight:800;text-decoration:none}
+.portal-side-nav .portal-side-placeholder{color:#8a9cab;cursor:default}
+.portal-side-nav a span,.portal-side-nav .portal-side-placeholder span{min-width:23px;text-align:center;color:#8ba5b8;font-size:.75rem}
 .portal-side-nav a:hover,.portal-side-nav a.active{background:#edf6fd;color:#1f5577}
 .portal-side-course{padding-top:20px}
 .portal-current-course{display:flex;align-items:center;gap:9px;margin-top:11px;padding:10px 11px;border-radius:10px;background:#f4f9fc;color:#173247;text-decoration:none;font-size:.83rem;font-weight:900}
