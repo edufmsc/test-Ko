@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>學習成果明細｜AI Learning System</title>
+  <link rel="stylesheet" href="system.css">
+  <style>
+    body{background:#f5f9fc}.result-wrap{width:min(980px,calc(100% - 32px));margin:42px auto 70px}.result-top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px}.back-link{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;background:transparent;text-decoration:none;color:#2e668c;font:inherit;font-weight:900;cursor:pointer}.back-link:hover{color:#174f78;text-decoration:underline}.result-card{background:#fff;border:1px solid #d6e5f0;border-radius:22px;box-shadow:0 12px 32px rgba(41,85,119,.08);overflow:hidden}.result-head{padding:28px 30px;background:linear-gradient(180deg,#eef7fd,#e6f1fa)}.result-head .eyebrow{margin-bottom:6px}.result-head h1{margin:0 0 8px;font-size:clamp(1.8rem,4vw,2.8rem)}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #d6e5f0;border-bottom:1px solid #d6e5f0}.result-grid>div{padding:18px 20px;border-right:1px solid #e3edf4}.result-grid>div:last-child{border-right:0}.result-grid span{display:block;color:#6d8293;font-size:.76rem}.result-grid strong{display:block;margin-top:4px}.answer-section{padding:28px 30px}.answer-editor{width:100%;min-height:170px;padding:20px;border:1px solid #d6e5f0;border-radius:16px;background:#f9fbfd;color:#173247;line-height:1.8;resize:vertical;font:inherit}.answer-editor:focus{outline:3px solid rgba(46,102,140,.12);border-color:#87b4d3}.answer-help{margin:9px 0 0;color:#7a8d9b;font-size:.8rem}.check-section{padding:0 30px 30px}.check-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:9px}.check-list li{padding:0;border:1px solid #dbe7ef;border-radius:12px;background:#fff;transition:border-color .15s ease,background .15s ease}.check-list li.checked{border-color:#bee1d2;background:#f7fcfa}.history-check{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;cursor:pointer;color:#536b7d}.history-check input{width:19px;height:19px;margin-top:2px;accent-color:#1d7a59;flex:0 0 auto}.history-check strong{font-weight:800}.check-list li.checked .history-check{color:#147657}.person{margin-top:10px;color:#6d8293}.status-pill{display:inline-block;padding:5px 10px;border-radius:999px;font-size:.8rem;font-weight:900;background:#e8eef3;color:#586d7d}.status-pill.completed{background:#e6f5ed;color:#147657}.status-pill.progress{background:#e7f1fb;color:#2e668c}.supplement-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid #e3edf4}.save-supplement{border:0;border-radius:11px;padding:11px 18px;background:#2e668c;color:#fff;font-weight:900}.supplement-message{margin:0;color:#6d8293;font-size:.84rem}.supplement-note{display:none;margin:0 30px 28px;padding:12px 14px;border-radius:12px;background:#edf6fd;color:#2e668c;font-size:.84rem}.supplement-note.visible{display:block}@media(max-width:760px){.result-grid{grid-template-columns:1fr 1fr}.result-grid>div:nth-child(2){border-right:0}.result-grid>div:nth-child(-n+2){border-bottom:1px solid #e3edf4}.result-top{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="result-wrap">
+    <div class="result-top">
+      <button id="backToRoadmap" class="back-link" type="button">← 返回 20 天學習計畫</button>
+      <span id="personInfo" class="person"></span>
+    </div>
+
+    <section class="result-card">
+      <div class="result-head">
+        <p class="eyebrow">LEARNING RESULT</p>
+        <div id="dayLabel" class="badge">DAY --</div>
+        <h1 id="resultTitle">學習成果明細</h1>
+        <p id="resultDeliverable" class="muted"></p>
+      </div>
+
+      <div class="result-grid">
+        <div><span>學習狀態</span><strong id="resultStatus">—</strong></div>
+        <div><span>排程日期</span><strong id="resultDate">—</strong></div>
+        <div><span>預計時間</span><strong id="plannedMinutes">0 分</strong></div>
+        <div><span>實際時間</span><strong id="actualMinutes">0 分</strong></div>
+      </div>
+
+      <div class="answer-section">
+        <p class="eyebrow">USER ANSWER</p>
+        <h2>人員成果紀錄</h2>
+        <textarea id="answerEditor" class="answer-editor" placeholder="可回到已完成的 DAY 補填或修改成果紀錄…"></textarea>
+        <p class="answer-help">已完成的 DAY 仍可補登；儲存後，系統會在成果內容最後自動加上補登日期。</p>
+      </div>
+
+      <div class="check-section">
+        <p class="eyebrow">CHECKLIST</p>
+        <h2>今日完成確認</h2>
+        <ul id="checkList" class="check-list"></ul>
+        <div class="supplement-actions">
+          <button id="saveSupplementBtn" class="save-supplement" type="button">儲存補登／修改</button>
+          <p id="supplementMessage" class="supplement-message"></p>
+        </div>
+      </div>
+      <p id="supplementNote" class="supplement-note"></p>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="result.js"></script>
+  <script src="ui-enhancements.js"></script>
+  <script>
+    document.getElementById('backToRoadmap').addEventListener('click', function () {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.replace('index.html#roadmap');
+    });
+  </script>
+</body>
+</html>
