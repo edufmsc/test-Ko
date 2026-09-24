@@ -12,7 +12,7 @@ window.AI_BRIDGE = (() => {
 
   function login(email, name) {
     return new Promise((resolve, reject) => {
-      if (!configured()) { reject(new Error('https://script.google.com/macros/s/AKfycbxfD3vkA2ndUTFAvkzSffsRXD79yE1DgCcKr9tIteQHvr0TRa9mz8VSVkRhgRplgVjU/exec')); return; }
+      if (!configured()) { reject(new Error('請先在 config.js 填入 Apps Script 部署網址')); return; }
       const callback = `__AI_LMS_CB_${++serial}`;
       const script = document.createElement('script');
       const timer = setTimeout(() => finish(new Error('讀取逾時，請檢查 Apps Script 部署權限與網址')), 20000);
