@@ -30,7 +30,8 @@ const PLAN=[
 ].map(p=>({...p,summary:`以實際工作情境練習「${p.title}」，把學習轉成可重複使用的成果。`,points:[`了解「${p.title}」的核心方法`,'完成一個與工作相關的實作','檢查成果是否可重複使用'],checklist:['閱讀今日學習重點','完成至少一次實際操作','留下成果或學習紀錄',`完成今日成果：${p.deliverable}`],case_text:'選擇一項目前工作上的真實任務，使用今日方法完成改善。',practice_prompt:'請依今日主題協助我拆解任務、提出步驟，並在輸出前檢查遺漏與風險。',output_task:`完成並記錄：${p.deliverable}`}));
 
 function userKey(){return (CFG.STORAGE_PREFIX||'ai-learning-frontend-v1:')+'local'}
-function blankStore(){return{startDate:new Date().toISOString().slice(0,10),records:{},checklist:{},checkins:[],portfolio:[],report:null}}
+function localToday(){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
+function blankStore(){return{startDate:localToday(),records:{},checklist:{},checkins:[],portfolio:[],report:null}}
 function loadStore(){try{return {...blankStore(),...JSON.parse(localStorage.getItem(userKey())||'{}')}}catch(e){return blankStore()}}
 function saveStore(){localStorage.setItem(userKey(),JSON.stringify(data.store))}
 function businessDate(start,day){const d=new Date(start+'T12:00:00');let n=1;while(n<day){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)n++}return d.toISOString().slice(0,10)}
@@ -42,7 +43,7 @@ function currentData(){
   const currentPlan=plan.find(p=>p.day_no===currentNo);
   const record=s.records[currentNo]||null;
   const checks=(s.checklist[currentNo]||{});
-  return{user:profile,plan,currentPlan,currentRecord:record,currentChecklist:Object.entries(checks).map(([k,v])=>({item_no:+k,checked:!!v.checked,item_text:v.item_text||''})),todayCheckin:s.checkins.includes(new Date().toISOString().slice(0,10)),portfolio:s.portfolio,report:s.report,stats:{completedDays:completed.length,streakDays:streakDays(s.checkins),totalMinutes:Object.values(s.records).reduce((a,x)=>a+(+x.actual_minutes||0),0),portfolioCount:s.portfolio.length}};
+  return{user:profile,plan,currentPlan,currentRecord:record,currentChecklist:Object.entries(checks).map(([k,v])=>({item_no:+k,checked:!!v.checked,item_text:v.item_text||''})),todayCheckin:s.checkins.includes(localToday()),portfolio:s.portfolio,report:s.report,stats:{completedDays:completed.length,streakDays:streakDays(s.checkins),totalMinutes:Object.values(s.records).reduce((a,x)=>a+(+x.actual_minutes||0),0),portfolioCount:s.portfolio.length}};
 }
 function hydrate(){const view=currentData();Object.assign(data,view)}
 
@@ -61,11 +62,11 @@ function renderPortfolio(){const arr=data.portfolio||[];$('portfolioGrid').inner
 function reportFromStore(){const keys=['prompt','document','research','data','automation','visual','workflow'],tot=Object.fromEntries(keys.map(k=>[k,0])),got=Object.fromEntries(keys.map(k=>[k,0]));PLAN.forEach(p=>p.tags.forEach(k=>{tot[k]++;if(data.store.records[p.day_no]?.status==='completed')got[k]++}));const score=k=>tot[k]?Math.round(got[k]/tot[k]*100):0;const scores=Object.fromEntries(keys.map(k=>[k+'_score',score(k)]));const labels={prompt_score:'Prompt',document_score:'文件處理',research_score:'搜尋研究',data_score:'資料分析',automation_score:'自動化',visual_score:'視覺表達',workflow_score:'工作流程整合'};const pairs=Object.entries(scores).sort((a,b)=>b[1]-a[1]);return{completion_rate:Math.round(data.stats.completedDays/20*100),total_minutes:data.stats.totalMinutes,...scores,strengths:pairs.slice(0,2).map(x=>labels[x[0]]).join('、'),skill_gaps:pairs.slice(-2).map(x=>labels[x[0]]).join('、'),next_steps:'優先加強目前完成度較低的能力，並挑選 1 個作品持續優化。'}}
 function renderReport(r){if(!r){$('reportContent').innerHTML='<p class="muted">尚未產生報告。完成更多學習後按「更新能力報告」。</p>';return}const scores=[['Prompt',r.prompt_score],['文件',r.document_score],['研究',r.research_score],['資料',r.data_score],['自動化',r.automation_score],['視覺',r.visual_score],['工作流',r.workflow_score]];$('reportContent').innerHTML=`<h3>${esc(data.user.name)}｜AI 能力摘要</h3><p>完成率 ${r.completion_rate}%｜總學習 ${r.total_minutes} 分鐘</p><div class="score-grid">${scores.map(([k,v])=>`<div class="score"><span>${k}</span><strong>${v}</strong></div>`).join('')}</div><div class="report-note"><strong>目前優勢</strong><p>${esc(r.strengths)}</p><strong>能力缺口</strong><p>${esc(r.skill_gaps)}</p><strong>下一步</strong><p>${esc(r.next_steps)}</p></div>`}
 
-function saveRecord(status='in_progress'){const p=data.currentPlan;const minutes=Number($('customMinutes').value)||p.default_minutes;const actual=Math.max(0,Math.round((minutes*60-timer.remaining)/60));data.store.records[p.day_no]={day_no:p.day_no,planned_minutes:minutes,actual_minutes:actual,status,result_note:$('resultNote').value.trim(),updated_at:new Date().toISOString()};saveStore();$('saveMessage').textContent=status==='completed'?'DAY 已完成並儲存在你的個人瀏覽器紀錄。':'今日進度已儲存。';renderAll()}
+function saveRecord(status='in_progress'){const p=data.currentPlan;const minutes=Number($('customMinutes').value)||p.default_minutes;const actual=Math.max(0,Math.round((minutes*60-timer.remaining)/60));data.store.records[p.day_no]={day_no:p.day_no,planned_minutes:minutes,actual_minutes:actual,status,result_note:$('resultNote').value.trim(),updated_at:new Date().toISOString()};saveStore();$('saveMessage').textContent=status==='completed'?'DAY 已完成，正在同步至試算表。':'今日進度已暫存，正在同步。';renderAll()}
 function formatTime(s){return [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(v=>String(v).padStart(2,'0')).join(':')}function syncTimer(){$('timerDisplay').textContent=formatTime(timer.remaining);$('timerToggle').textContent=timer.running?'暫停':'開始'}function stopTimer(){if(timer.id)clearInterval(timer.id);timer.id=null;timer.running=false;syncTimer()}
 
 $('checklist').addEventListener('change',e=>{const box=e.target.closest('[data-check]');if(!box)return;const day=data.currentPlan.day_no,idx=Number(box.dataset.check);data.store.checklist[day]=data.store.checklist[day]||{};data.store.checklist[day][idx]={checked:box.checked,item_text:data.currentPlan.checklist[idx-1]};saveStore();updateCheckProgress()});
-$('checkinBtn').onclick=()=>{const today=new Date().toISOString().slice(0,10);if(!data.store.checkins.includes(today))data.store.checkins.push(today);saveStore();renderAll()};
+$('checkinBtn').onclick=()=>{const today=localToday();if(!data.store.checkins.includes(today))data.store.checkins.push(today);saveStore();renderAll()};
 $('saveDayBtn').onclick=()=>saveRecord('in_progress');
 $('completeDayBtn').onclick=()=>saveRecord('completed');
 $('addPortfolioBtn').onclick=()=>{const title=$('portfolioTitle').value.trim();if(!title){alert('請輸入作品名稱');return}const item={id:crypto.randomUUID?.()||Date.now(),day_no:data.currentPlan?.day_no||20,title,tools:$('portfolioTools').value.trim(),result:$('portfolioResult').value.trim(),result_link:$('portfolioLink').value.trim(),created_at:new Date().toISOString()};data.store.portfolio.push(item);saveStore();['portfolioTitle','portfolioTools','portfolioResult','portfolioLink'].forEach(id=>$(id).value='');renderAll()};
@@ -75,4 +76,4 @@ $('applyMinutes').onclick=()=>{const m=Math.max(10,Math.min(360,Number($('custom
 $('timerToggle').onclick=()=>{if(timer.running){stopTimer();return}timer.running=true;syncTimer();timer.id=setInterval(()=>{timer.remaining--;syncTimer();if(timer.remaining<=0)stopTimer()},1000)};
 $('timerReset').onclick=()=>{stopTimer();timer.remaining=timer.minutes*60;syncTimer()};
 
-window.addEventListener('DOMContentLoaded',initLocalApp);
+window.addEventListener('DOMContentLoaded', () => initLocalApp());
