@@ -78,7 +78,7 @@
   async function signIn(response) {
     const msg = document.getElementById('loginMessage');
     try {
-      const account = decodeGoogleCredential(response.credential);
+      const account = response && typeof response.credential === "string" ? decodeGoogleCredential(response.credential) : response;
       const email = String(account.email || '').trim().toLowerCase();
       if (!email.includes('@')) throw new Error('Google 帳號未提供 Email');
       msg.textContent = '正在讀取學習紀錄…';
@@ -127,6 +127,8 @@
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appShell').classList.remove('hidden');
       renderAll();
+      const returnId = decodeURIComponent(location.hash.slice(1));
+      if (returnId) requestAnimationFrame(() => document.getElementById(returnId)?.scrollIntoView());
       status('已讀取雲端紀錄');
       if (!remote || JSON.stringify(data.store) !== lastSent) saveStore();
     } catch (error) {
@@ -156,9 +158,14 @@
       google.accounts.id.renderButton(document.getElementById('googleButton'), {
         theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', width: 300
       });
-      msg.textContent = '請使用個人 Google 帳號登入。';
+      if (!sessionStorage.getItem('ai-learning-current-email')) msg.textContent = '請使用個人 Google 帳號登入。';
     };
     setup();
+    const rememberedEmail = sessionStorage.getItem('ai-learning-current-email');
+    if (rememberedEmail && rememberedEmail.includes('@')) {
+      msg.textContent = '正在接續學習紀錄…';
+      signIn({email: rememberedEmail, name: sessionStorage.getItem('ai-learning-current-name') || ''});
+    }
   };
 
   document.getElementById('syncStatus').addEventListener('click', () => { if (queued) flush(true); });

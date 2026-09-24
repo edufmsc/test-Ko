@@ -86,7 +86,8 @@
       transition: background .15s ease,color .15s ease;
     }
     .learning-sidebar-nav a:hover,
-    .learning-sidebar-nav a.active {
+    .learning-sidebar-nav a.active,
+    .learning-sidebar-nav a[aria-current="page"] {
       background: #edf6fd;
       color: #1f5577;
     }
@@ -238,6 +239,13 @@
     aside.setAttribute('aria-label', '今日學習導航與課程資訊');
     aside.innerHTML = `
       <div class="learning-sidebar-card">
+        <section class="learning-sidebar-section">
+          <p class="learning-sidebar-label">課程導覽</p>
+          <nav class="learning-sidebar-nav">
+            <a href="index.html"><span class="nav-no">←</span>返回課程首頁</a>
+            <a href="course.html" aria-current="page"><span class="nav-no">01</span>AI 工作應用 · 20 天</a>
+          </nav>
+        </section>
         <section class="learning-sidebar-section">
           <p class="learning-sidebar-label">TODAY</p>
           <span id="sidebarDay" class="learning-sidebar-day">DAY 01</span>

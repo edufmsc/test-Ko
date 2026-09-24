@@ -1,31 +1,23 @@
-# AI Learning System 純前端版
+# 個人 AI 學習平台
 
-## 開啟與建立新網站
-1. 解壓縮，保留資料夾內所有檔案的相對位置。
-2. 以瀏覽器開啟 index.html 可預覽；完整跨頁儲存建議使用靜態網站伺服器。
-3. 建立新的程式碼儲存庫，將本資料夾內的檔案上傳至網站根目錄，入口為 index.html。
-4. 不需安裝套件、建置、登入設定、API 金鑰或後端。
+GitHub Pages 提供登入後的課程首頁與學習頁；Apps Script 網頁應用程式負責登入操作紀錄、學習資料讀寫及教材清單。跨裝置紀錄依同一個 Email 識別。
 
-## 保留功能
-原有版面與響應式排版、20 天學習計畫、每日勾選與打卡、累積計時與浮動計時器、成果儲存與歷史補登、作品集、能力報告、教材新增／刪除／輪播、側邊導航及回頂端。
-課程文字仍保留原本內容；課名中的 Apps Script、Google Workspace 等只是教材主題，沒有執行串接。
+## 網頁入口
 
-## 已移除
-Google 登入 SDK、Client ID、憑證解析、登入／登出流程，以及 YouTube、Vimeo、Google Drive 嵌入和遠端影片自動載入。
-原始專案未發現資料庫連線、API 請求或後端程式。
+- `index.html`：Google 登入及課程首頁，左側列出課程入口。
+- `course.html`：既有的 AI 工作應用 20 天計畫，包含每日任務、教材、打卡、計時、成果、作品集及報告；側欄可返回課程首頁。
+- `result.html`：既有的 DAY 成果與歷史補登，返回時會進入 `course.html#roadmap`。
 
-## 資料與使用範圍
-所有學習紀錄與新增教材只存在目前瀏覽器的 localStorage；不會上傳、同步或區分登入帳號。清除網站資料會清空紀錄，不同裝置不會共用。
-使用獨立儲存前綴，不讀取舊網站的帳號紀錄。壓縮檔不含使用者學習紀錄。
-教材與作品可保存使用者自行輸入的網址，但只在手動點選時開啟，不嵌入外部服務。
-能力報告依課程完成度在前端計算，未呼叫 AI 服務。
+從首頁進入課程時，沿用同一分頁的登入狀態；直接開啟課程網址也可使用 Google 帳號登入。首頁讀取學習摘要，Apps Script 仍會記錄登入操作；首頁不修改學習紀錄。課程頁仍使用原本的 `sync.js` 及 `result-sync.js` 進行儲存。
 
-## 檔案
-- index.html / system.css：主頁與樣式
-- app.js：課程資料及主要互動
-- config.js：本機儲存名稱
-- result.html / result.js：成果明細及補登
-- timer-persistence.js：計時及本機保存
-- course-materials.js：各天教材清單（目前皆空白）
-- ui-enhancements.js：教材輪播及介面互動
-- roadmap-results.js / learning-sidebar.js / scroll-offset-fix.js：成果連結、導航與捲動
+## 設定與部署
+
+在 `config.js` 填入網頁用 Google OAuth 用戶端 ID 與 Apps Script 網頁應用程式 `/exec` 網址。GitHub Pages 發佈目錄須包含本專案所有檔案，並以 `index.html` 為入口。Apps Script 部署、試算表與既有資料不需因這次頁面調整而搬移或重建。
+
+## 未來增加課程
+
+1. 新增一個獨立課程頁面（例如 `course-data.html`）及它需要的教材腳本。
+2. 在 `index.html` 的左側課程列表及課程卡片加入該頁連結。
+3. 若新課程需要獨立進度與教材，在 Apps Script 規劃課程 ID 與資料分隔；不要把不同課程寫進目前 20 天計畫的相同紀錄欄位。
+
+目前的「更多 AI 課程」是規劃中卡片，不會建立或儲存新課程的紀錄。現有簡化版登入依網頁傳來的 Email 識別學員。
